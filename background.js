@@ -1,7 +1,10 @@
+// Cross-browser extension API
+const extAPI = typeof browser !== 'undefined' ? browser : chrome;
+
 // Fires when the extension is first installed or updated
-chrome.runtime.onInstalled.addListener(() => {
-  console.log('Extension installed and background service worker active.');
+extAPI.runtime.onInstalled.addListener(() => {
+  console.log('Extension installed and background active.');
   
   // Example of saving an initial value using the storage API
-  chrome.storage.sync.set({ initialized: true });
+  extAPI.storage.sync.set({ initialized: true });
 });
