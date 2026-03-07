@@ -57,29 +57,29 @@
   <body>
     <h2>Persona Cover</h2>
     
-    <div class="form-group">
-      <label for="apiKey">Gemini API Key:</label>
-      <input type="password" id="apiKey" placeholder="Enter API Key">
+    <div id="main-view">
+      <div class="form-group">
+        <label for="persona">Cover Persona:</label>
+        <select id="persona">
+          <option value="Professional corporate director speaking on LinkedIn">Corporate / LinkedIn</option>
+          <option value="Gen Z influencer using modern slang (no cap, fr fr)">Gen Z Influencer</option>
+          <option value="Crusty 18th-century Pirate looking for treasure">Pirate</option>
+          <option value="Highly sarcastic and mildly annoyed teenager">Sarcastic Teenager</option>
+          <option value="Existential philosopher questioning the meaning of the tweet">Existential Philosopher</option>
+          <option value="Over-enthusiastic golden retriever golden child">Golden Retriever Energy</option>
+        </select>
+      </div>
+      <button id="transformBtn" title="Make sure you are focused in the X compose box before clicking!">Transform Text</button>
+
+      <hr style="margin: 20px 0;">
+      <button id="settingsBtn">⚙️ Settings</button>
     </div>
 
-    <div class="form-group">
-      <label for="persona">Cover Persona:</label>
-      <select id="persona">
-        <option value="Professional corporate director speaking on LinkedIn">Corporate / LinkedIn</option>
-        <option value="Gen Z influencer using modern slang (no cap, fr fr)">Gen Z Influencer</option>
-        <option value="Crusty 18th-century Pirate looking for treasure">Pirate</option>
-        <option value="Highly sarcastic and mildly annoyed teenager">Sarcastic Teenager</option>
-        <option value="Existential philosopher questioning the meaning of the tweet">Existential Philosopher</option>
-        <option value="Over-enthusiastic golden retriever golden child">Golden Retriever Energy</option>
-      </select>
+    <div id="settings-view" style="display:none">
+      <input type="password" id="apiKey" placeholder="Groq API key" />
+      <button id="save">Save</button>
+      <button id="back">← Back</button>
     </div>
-
-    <button id="saveBtn">Save Config</button>
-    <div id="status"></div>
-    
-    <hr style="margin: 20px 0;">
-
-    <button id="transformBtn" title="Make sure you are focused in the X compose box before clicking!">Transform Text</button>
 
     <!-- Scripts must be loaded externally in extensions -->
     <script src="popup.js"></script>
