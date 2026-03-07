@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "My Basic Extension",
+  "version": "0.0.1",
+  "description": "A basic browser extension template.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Click to open popup"
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ]
+}

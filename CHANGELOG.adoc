@@ -1,0 +1,10 @@
+= Changelog
+
+All notable changes to this project will be documented in this file.
+
+== [0.0.1] - 2026-03-07
+
+=== Added
+- Initial project setup as a Chrome/browser extension template.
+- Basic extension scaffolding: `manifest.json`, `background.js`, `content.js`, `popup.html`, `popup.js`.
+- README detailing the extensions features and setup instructions.
