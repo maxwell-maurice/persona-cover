@@ -34,5 +34,8 @@
     "storage",
     "activeTab",
     "scripting"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*"
   ]
 }

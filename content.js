@@ -13,57 +13,67 @@ document.addEventListener('input', (event) => {
   }
 }, true); // Use capture phase to ensure we catch changes early
 
-// Array of random words for our "cover persona"
+// Array of random words for our "cover persona" - NO LONGER USED, KEPT FOR REFERENCE
 const randomWords = [
   "synergy", "paradigm", "blockchain", "quantum", "orthogonal", 
   "aesthetic", "vibes", "literally", "mindset", "hustle", 
   "coffee", "grind", "alignment", "bandwidth", "pivot"
 ];
 
-function generateRandomPhrase() {
-  const numWords = Math.floor(Math.random() * 5) + 3; // 3 to 7 words
-  const phrase = [];
-  for (let i = 0; i < numWords; i++) {
-    const randomIndex = Math.floor(Math.random() * randomWords.length);
-    phrase.push(randomWords[randomIndex]);
-  }
-  return phrase.join(" ") + ".";
-}
-
 // Cross-browser extension API
 const extAPI = typeof browser !== 'undefined' ? browser : chrome;
 
 extAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "injectRandomWords") {
-    console.log("[Persona Cover] Received request to inject random words.");
+  if (message.action === "transformText") {
+    console.log("[Persona Cover] Received request to transform text.");
     
     // Find the compose box
     const composeBox = document.querySelector('[data-testid="tweetTextarea_0"]');
     
     if (composeBox) {
-      const newText = generateRandomPhrase();
+      // 1. Read existing text
+      const currentText = composeBox.textContent;
       
-      // Need to focus for document.execCommand to target it
-      composeBox.focus();
-      
-      // Select all existing text if we want to replace it entirely
-      document.execCommand('selectAll', false, null);
-      
-      // Use execCommand to insert text; this tricks React/Draft.js into 
-      // registering the change and updating its internal state
-      const success = document.execCommand('insertText', false, newText);
-      
-      if (!success) {
-        console.warn("[Persona Cover] execCommand failed, fallback to textContent (may not trigger React).");
-        composeBox.textContent = newText;
-        
-        // Dispatching input events as fallback
-        composeBox.dispatchEvent(new Event('input', { bubbles: true }));
+      if (!currentText || currentText.trim() === "") {
+        console.warn("[Persona Cover] Compose box is empty.");
+        // We could alert here, but we don't have a direct UI, maybe an alert pop
+        alert("Compose box is empty! Please type something first.");
+        sendResponse({ success: false });
+        return;
       }
+
+      console.log("[Persona Cover] Sending text to background for Gemini processing...");
+
+      // 2. Call the background script to talk to Gemini
+      extAPI.runtime.sendMessage({ action: "callGemini", text: currentText }, (response) => {
+        if (response.error) {
+          console.error("[Persona Cover] Error from Gemini:", response.error);
+          alert("Persona Cover Error: " + response.error);
+          return;
+        }
+
+        if (response.success && response.text) {
+          const newText = response.text;
+          
+          // 3. Focus and replace
+          composeBox.focus();
+          document.execCommand('selectAll', false, null);
+          
+          const success = document.execCommand('insertText', false, newText);
+          
+          if (!success) {
+            console.warn("[Persona Cover] execCommand failed, fallback to textContent.");
+            composeBox.textContent = newText;
+            composeBox.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          
+          console.log("[Persona Cover] Successfully injected transformed text");
+        }
+      });
       
-      console.log("[Persona Cover] Injected:", newText);
     } else {
       console.warn("[Persona Cover] Could not find X.com compose box on this page.");
+      alert("Could not find the compose box. Are you on the right page?");
     }
   }
 });
