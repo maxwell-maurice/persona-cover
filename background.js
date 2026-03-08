@@ -10,24 +10,21 @@ extAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   const { text } = message;
 
-  extAPI.storage.sync.get(["apiKey"], async (result) => {
-    if (!result.apiKey) {
-      sendResponse({
-        error:
-          "Missing Groq API Key. Please configure it in the popup settings.",
-      });
-      return;
-    }
-
-    const apiKey = result.apiKey;
-    const persona =
-      message.persona || "Professional corporate director speaking on LinkedIn";
-
-    const prompt = `Rewrite the following text to sound like a ${persona}. Keep the core meaning the same, just change the tone. Output ONLY the rewritten text, nothing else, no quotes, no introductory conversational fluff.
-
-Text: ${text}`;
-
+  (async () => {
     try {
+      const result = await extAPI.storage.local.get(["apiKey"]);
+      if (!result.apiKey) {
+        sendResponse({
+          error:
+            "Missing Groq API Key. Please configure it in the popup settings.",
+        });
+        return;
+      }
+
+      const apiKey = result.apiKey;
+      const persona =
+        message.persona || "Professional corporate director speaking on LinkedIn";
+
       const response = await fetch(
         "https://api.groq.com/openai/v1/chat/completions",
         {
@@ -38,7 +35,10 @@ Text: ${text}`;
           },
           body: JSON.stringify({
             model: "llama-3.3-70b-versatile",
-            messages: [{ role: "user", content: prompt }],
+            messages: [
+              { role: "system", content: `Rewrite the provided text to sound like a ${persona}. Output ONLY the rewritten text, nothing else, no quotes, no introductory conversational fluff.` },
+              { role: "user", content: text }
+            ],
             temperature: 0.7,
             max_tokens: 1024,
           }),
@@ -65,7 +65,7 @@ Text: ${text}`;
       console.error("Groq API request error:", err);
       sendResponse({ error: err.toString() });
     }
-  });
+  })();
 
   // Return true to indicate async sendResponse
   return true;

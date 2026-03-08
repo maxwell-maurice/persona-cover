@@ -3,18 +3,6 @@ console.log("Persona Cover content script loaded.");
 // Cross-browser extension API
 const extAPI = typeof browser !== "undefined" ? browser : chrome;
 
-// Listen for typing in X's compose box
-document.addEventListener(
-  "input",
-  (event) => {
-    const target = event.target;
-    if (target.getAttribute?.("data-testid") === "tweetTextarea_0") {
-      console.log("[Persona Cover] User is typing:", target.textContent);
-    }
-  },
-  true,
-);
-
 // Listen for transform requests from the popup
 extAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action !== "transformText") return;
@@ -27,8 +15,7 @@ extAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.warn(
       "[Persona Cover] Could not find X.com compose box on this page.",
     );
-    alert("Could not find the compose box. Are you on the right page?");
-    sendResponse({ success: false });
+    sendResponse({ success: false, error: "Could not find the compose box. Are you on the right page?" });
     return;
   }
 
@@ -36,8 +23,7 @@ extAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (!currentText || currentText.trim() === "") {
     console.warn("[Persona Cover] Compose box is empty.");
-    alert("Compose box is empty! Please type something first.");
-    sendResponse({ success: false });
+    sendResponse({ success: false, error: "Compose box is empty! Please type something first." });
     return;
   }
 
@@ -49,9 +35,13 @@ extAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
   extAPI.runtime.sendMessage(
     { action: "callGroq", text: currentText, persona: message.persona },
     (response) => {
+      if (!response) {
+        sendResponse({ success: false, error: extAPI.runtime.lastError?.message || "Unknown error calling background process." });
+        return;
+      }
       if (response.error) {
         console.error("[Persona Cover] Error from Groq:", response.error);
-        alert("Persona Cover Error: " + response.error);
+        sendResponse({ success: false, error: response.error });
         return;
       }
 
@@ -74,7 +64,12 @@ extAPI.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
 
         console.log("[Persona Cover] Successfully injected transformed text.");
+        sendResponse({ success: true });
+      } else {
+        sendResponse({ success: false, error: "Unknown error processing text." });
       }
     },
   );
+
+  return true;
 });
