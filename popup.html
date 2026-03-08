@@ -2,12 +2,27 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Extension Popup</title>
+    <title>Persona Cover</title>
     <style>
       body {
         width: 300px;
         padding: 16px;
         font-family: system-ui, -apple-system, sans-serif;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type="password"], select {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
       }
       button {
         padding: 8px 16px;
@@ -16,16 +31,55 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        width: 100%;
+        margin-bottom: 10px;
       }
       button:hover {
         background-color: #0056b3;
       }
+      #transformBtn {
+        background-color: #28a745;
+        font-size: 1.1em;
+        font-weight: bold;
+      }
+      #transformBtn:hover {
+        background-color: #218838;
+      }
+      #status {
+        color: green;
+        font-size: 0.9em;
+        margin-top: 5px;
+        text-align: center;
+        min-height: 20px;
+      }
     </style>
   </head>
   <body>
-    <h2>Hello, Extension!</h2>
-    <p>This is your popup UI.</p>
-    <button id="actionBtn">Click Me</button>
+    <h2>Persona Cover</h2>
+    
+    <div id="main-view">
+      <div class="form-group">
+        <label for="persona">Cover Persona:</label>
+        <select id="persona">
+          <option value="Professional corporate director speaking on LinkedIn">Corporate / LinkedIn</option>
+          <option value="Gen Z influencer using modern slang (no cap, fr fr)">Gen Z Influencer</option>
+          <option value="Crusty 18th-century Pirate looking for treasure">Pirate</option>
+          <option value="Highly sarcastic and mildly annoyed teenager">Sarcastic Teenager</option>
+          <option value="Existential philosopher questioning the meaning of the tweet">Existential Philosopher</option>
+          <option value="Over-enthusiastic golden retriever golden child">Golden Retriever Energy</option>
+        </select>
+      </div>
+      <button id="transformBtn" title="Make sure you are focused in the X compose box before clicking!">Transform Text</button>
+
+      <hr style="margin: 20px 0;">
+      <button id="settingsBtn">⚙️ Settings</button>
+    </div>
+
+    <div id="settings-view" style="display:none">
+      <input type="password" id="apiKey" placeholder="Groq API key" />
+      <button id="save">Save</button>
+      <button id="back">← Back</button>
+    </div>
 
     <!-- Scripts must be loaded externally in extensions -->
     <script src="popup.js"></script>

@@ -3,19 +3,39 @@
   "name": "My Basic Extension",
   "version": "0.0.1",
   "description": "A basic browser extension template.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Click to open popup"
+    "default_title": "Click to open popup",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "background": {
     "scripts": [
       "background.js"
-    ]
+    ],
+    "type": "module"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "persona-cover@example.com",
+      "strict_min_version": "109.0"
+    }
   },
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "*://*.x.com/*",
+        "*://*.twitter.com/*"
       ],
       "js": [
         "content.js"
@@ -26,5 +46,9 @@
     "storage",
     "activeTab",
     "scripting"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.groq.com/*"
   ]
 }
